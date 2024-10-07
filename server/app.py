@@ -36,5 +36,29 @@ def heroes():
     )
     return response
 
+# Get heroes by id
+@app.route('/heroes/<int:id>')
+def get_hero_by_id(id):
+    hero = Hero.query.filter(Hero.id == id).first()
+    if hero:
+        hero_dict = {
+            'name': hero.name,
+            'super_name': hero.super_name,
+        }
+        response = make_response(
+            hero_dict,
+            200,
+            {'Content-Type': 'application/json'}
+        )
+    else:
+        response = make_response(
+            jsonify({'error': 'Hero not found'}),
+            404,
+            {'Content-Type': 'application/json'}
+        )
+    return response
+        
+
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
