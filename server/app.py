@@ -15,7 +15,7 @@ db.init_app(app)
 
 @app.route('/')
 def index():
-    return "Index for Hero API"
+    return "Index for Heroes API"
 
 
 # Get heroes

@@ -45,8 +45,7 @@ class Power(db.Model, SerializerMixin):
     # Relationship to hero_powers table
     hero_powers = db.relationship('HeroPower', back_populates='power', cascade="all,delete-orphan")
     
-    # heroes = association_proxy('hero_powers', 'hero', creator=lambda hero_id: HeroPower(hero_id=hero_id))
-    
+ 
     def __repr__(self):
         return f"<Power {self.name}>"
 
