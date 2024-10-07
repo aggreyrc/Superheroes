@@ -57,6 +57,47 @@ def get_hero_by_id(id):
             {'Content-Type': 'application/json'}
         )
     return response
+
+
+# Get Powers
+@app.route('/powers')
+def powers():
+    powers = []
+    for power in Power.query.all():
+        power_dict = {
+            'name': power.name,
+            'description': power.description,
+        }
+        powers.append(power_dict)
+        
+    response = make_response(
+        powers,
+        200,
+        {'Content-Type': 'application/json'}
+    )
+    return response
+
+# Get powers by id
+@app.route('/powers/<int:id>')
+def get_power_by_id(id):
+    power = Power.query.filter(Power.id == id).first()
+    if power:
+        power_dict = {
+            'name': power.name,
+            'description': power.description,
+        }
+        response = make_response(
+            power_dict,
+            200,
+            {'Content-Type': 'application/json'}
+        )
+    else:
+        response = make_response(
+            jsonify({'error': 'Power not found'}),
+            404,
+            {'Content-Type': 'application/json'}
+        )
+    return response
         
 
 
