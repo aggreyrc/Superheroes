@@ -163,6 +163,48 @@ def power_by_id(id):
 
             return response
         
+        
+# POST hero_powers
+@app.route('/hero_powers', methods=['POST'])
+def create_hero_power():
+    data = request.json
+    try:
+        hero_power = HeroPower(
+            strength=data['strength'],
+            hero_id=data['hero_id'],
+            power_id=data['power_id']
+        )
+        db.session.add(hero_power)
+        db.session.commit()
+        
+        hero = Hero.query.get(hero_power.hero_id)
+        power = Power.query.get(hero_power.power_id)
+        
+        return jsonify({
+            "id": hero_power.id,
+            "hero_id": hero_power.hero_id,
+            "power_id": hero_power.power_id,
+            "strength": hero_power.strength,
+            "hero": {
+                "id": hero.id,
+                "name": hero.name,
+                "super_name": hero.super_name
+            },
+            "power": {
+                "description": power.description,
+                "id": power.id,
+                "name": power.name
+            }
+        })
+    except ValueError as e:
+        db.session.rollback()
+        return jsonify({"errors": [str(e)]}), 400
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Unexpected error: {str(e)}")
+        return jsonify({"errors": ["Validation Errors"]}), 500
+     
+        
 
 
 if __name__ == '__main__':
