@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
@@ -98,6 +98,70 @@ def get_power_by_id(id):
             {'Content-Type': 'application/json'}
         )
     return response
+
+
+# Patch powers
+@app.route('/powers/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def power_by_id(id):
+    power = Power.query.filter(Power.id == id).first()
+    
+    if power == None:
+        response_body = {
+            "error": "Power not found"
+        }
+        response = make_response(response_body,404)
+        
+        return response
+    
+    else:
+        if request.method == 'GET':
+            power_dict = {
+                'name': power.name,
+                'description': power.description,
+            }
+            response = make_response(
+                power_dict,
+                200
+            )
+            
+            return response
+        
+        elif request.method == 'PATCH':
+            for attr in request.form:
+                setattr(power, attr, request.form.get(attr))
+                
+            db.session.add(power)
+            db.session.commit()
+            
+            power_dict = {
+                'description': "Valid Updated Description",
+                "id": power.id,
+                'name': power.name
+            }
+            
+            response = make_response(
+                power_dict,
+                200
+            )
+            
+            return response
+        
+        
+        elif request.method == 'DELETE':
+            db.session.delete(power)
+            db.session.commit()
+            
+            response_body = {
+                "delete_successful": True,
+                "message": "Power deleted successfully"
+            }
+            
+            response = make_response(
+                response_body,
+                200
+            )
+
+            return response
         
 
 
